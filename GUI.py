@@ -7,8 +7,8 @@ import random
 pygame.init()
 
 #Funtions and Variables
-myText = pygame.font.SysFont('helvetica', 30)
-circleRadius = 50
+myText = pygame.font.SysFont('helvetica', 25)
+circleRadius = 200
 
 
 def angleCalculator(x,y):
@@ -20,7 +20,7 @@ def angleCalculator(x,y):
         return 90
 
 #Base shapes and screen setup
-screen = pygame.display.set_mode([400, 600])
+screen = pygame.display.set_mode([1000, 600])
 pygame.draw.circle(screen,(Colour().white),(0,600),circleRadius)
 pygame.draw.circle(screen,(Colour().black),(0,600),circleRadius - 2)
 
@@ -54,10 +54,10 @@ while running:
         angle = angle * 180 / math.pi
         angle = math.floor(angle)
         textSurface = myText.render(str(lastAngle),False,Colour().black)
-        screen.blit(textSurface, (lastX + 25, lastY - 25))
+        screen.blit(textSurface, (lastX * 1.05, lastY * 1.05 -60))
 
         textSurface = myText.render(str(angle),False,Colour().white)
-        screen.blit(textSurface, (newX + 25, newY - 25))
+        screen.blit(textSurface, (newX * 1.05, newY * 1.05 - 60 ))
         
         lastX = newX
         lastY = newY

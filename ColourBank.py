@@ -12,6 +12,6 @@ class Colour:
         
     def randomiser(self):
         import random
-        colourList = [self.red,self.green,self.blue,self.yellow,self.green,self.purple]
-        return colourList[5]
+        colourList = [self.red,self.green,self.blue,self.yellow,self.aqua,self.purple,self.pink]
+        return colourList[random.randint(0,len(colourList))]
 

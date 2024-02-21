@@ -2,13 +2,12 @@
 import math
 import pygame
 from ColourBank import Colour
-import random
-import time
 
 pygame.init()
 
 #Variables and functions:
-myText = pygame.font.SysFont('helvetica', 25)
+angleText = pygame.font.SysFont('helvetica', 25)
+normalText = pygame.font.SysFont('helvetica', 15)
 running = True
 lastX = 0
 lastY = 0
@@ -17,6 +16,7 @@ pulling = False
 totalVelocity = 0
 circleRadius = 200
 oldRadius = circleRadius
+lastTotalVelocity = 0
 
 #Base shapes and screen setup
 screen = pygame.display.set_mode([1000, 600])
@@ -49,17 +49,17 @@ while running:
         #Adds angle text
         angle = angle * 180 / math.pi
         angle = math.floor(angle)
-        textSurface = myText.render(str(lastAngle),False,Colour().black)
+        textSurface = angleText.render(str(lastAngle),False,Colour().black)
         screen.blit(textSurface, (lastX * 1.05, lastY * 1.05 -60))
 
-        textSurface = myText.render(str(angle),False,Colour().white)
+        textSurface = angleText.render(str(angle),False,Colour().white)
         screen.blit(textSurface, (newX * 1.05, newY * 1.05 - 60 ))
         
         lastX = newX
         lastY = newY
         lastAngle = angle
 
-    #Velocity input based on pull
+    #Velocity input based on pull and circle resizing
     if pygame.mouse.get_pressed(num_buttons = 3) == (True,False,False) and pulling is False:
         startX, startY = pygame.mouse.get_pos()
         pulling = True
@@ -71,17 +71,17 @@ while running:
         totalVelocity = math.sqrt((xMovement**2) + (yMovement**2))
         circleRadius = 200 / ((totalVelocity/200) + 1)
 
+        #Adds text
+        textSurface = normalText.render(str(f"Input Velocity: {lastTotalVelocity}"),False,Colour().black)
+        screen.blit(textSurface, (0,0))
+
+        textSurface = normalText.render(str(f"Input Velocity: {totalVelocity}"),False,Colour().white)
+        screen.blit(textSurface, (0,0))
+        lastTotalVelocity = totalVelocity
+
     elif pygame.mouse.get_pressed(num_buttons = 3) == (False,False,False) and pulling is True:
         circleRadius = 200
         pulling = False
-        print(totalVelocity)
-
-    
-
-
-        
-
-
 
     pygame.display.flip()
 

@@ -1,128 +1,141 @@
-#Mostly messing around with Pygame
-import math
+#Imports
 import pygame
+from sys import exit
 from ColourBank import Colour
-import time
+import math
 
+#Functions
+def textBar(font):
+    underTextSurface = pygame.Surface((windowWidth,windowHeight / 3 * 1))
+    pygame.draw.rect(underTextSurface,Colour().white,(0,0,1200,1),1,)
+    return underTextSurface
+
+def angleCircle(radius,windowWidth,windowHeight):
+    #Draws Circle
+    angleCircleSurface = pygame.Surface((windowWidth,windowHeight))
+    pygame.draw.circle(angleCircleSurface,Colour().white,(windowWidth / 2, windowHeight / 3 * 2),radius,3)
+    angle = angleFinder()
+
+    #Draws
+    pygame.draw.line(angleCircleSurface,Colour().white,(windowWidth / 2, windowHeight / 3 * 2),(pointRelay(radius,angle,windowWidth,windowHeight)),3)
+
+    #Converts angle
+    degreesAngle = angle * 180 / math.pi
+    degreesAngle = math.floor(degreesAngle)
+    
+    #Renders
+    angleText = pygame.Surface((windowWidth,windowHeight))
+    angleText = baseFont.render(str(degreesAngle),False,Colour().white)
+    angleCircleSurface.blit(angleText,(pointRelay(radius * 1.25,angle,windowWidth,windowHeight)))
+
+    return angleCircleSurface
+
+def angleFinder():
+    #Gets Mouse position
+    mouseX, mouseY = pygame.mouse.get_pos()
+    mouseX = (mouseX - windowWidth / 2)
+    mouseY = -1 * (mouseY - windowHeight / 3 * 2)
+
+    #Calculates Angle
+    if mouseX != 0:
+        angle = math.atan(mouseY/mouseX)
+
+    else:
+        angle = math.pi
+
+    return angle
+
+def pointRelay(radius,angle,windowWidth,windowHeight):
+    #Relays to point on circle
+    circleX,circleY = (radius * math.cos(angle)),(radius * math.sin(angle))
+    if angle <= 0:
+        circleX = -circleX
+        circleY = circleY
+
+    elif angle > 0:
+        circleX = circleX
+        circleY = -circleY
+
+    return (circleX + windowWidth / 2) - 3,(circleY + windowHeight / 3 * 2) + 3
+
+def trajectory(inputVelocity,angle,windowWidth,windowHeight):
+    trajectorySurface = pygame.Surface((windowWidth,windowHeight))
+    verticalVelocity = inputVelocity * math.sin(angle)
+    horizontalVelocity = inputVelocity * math.cos(angle)
+    objectX = windowWidth / 2
+    objectY =  windowHeight / 3 * 2
+    bounces = 0
+
+    while bounces < 10:
+        print(angle,objectX,objectY)
+        if angle > 0:
+            pygame.draw.circle(trajectorySurface,Colour().purple,(objectX,objectY),5)
+
+        else:
+            pygame.draw.circle(trajectorySurface,Colour().purple,(-objectX,objectY),5)
+
+        verticalVelocity -= 9.81
+        objectX += horizontalVelocity
+        objectY -= verticalVelocity
+
+        if objectY < 0:
+            objectY = 1
+            horizontalVelocity = horizontalVelocity * 0.8
+            verticalVelocity = verticalVelocity * -0.7
+            bounces +=1
+
+        if objectY > windowHeight / 3 * 2:
+            objectY = windowHeight / 3 * 2
+            horizontalVelocity = horizontalVelocity * 0.8
+            verticalVelocity = verticalVelocity * -0.7
+            bounces +=1
+
+        if objectX < 0:
+            objectX = 1
+            horizontalVelocity = horizontalVelocity * -0.7
+            verticalVelocity = verticalVelocity *0.8
+            bounces +=1
+
+        if objectX > windowWidth:
+            objectX = windowWidth -1
+            horizontalVelocity = horizontalVelocity * -0.7
+            verticalVelocity = verticalVelocity *0.8
+            bounces +=1
+
+    return trajectorySurface
+
+
+#Variable initialising
+windowWidth,windowHeight = 1200, 600
+
+#Screen Setup
 pygame.init()
+screen = pygame.display.set_mode((windowWidth,windowHeight))
+pygame.display.set_caption("Projectile Motion Sim 2.0")
 
-#Variables and functions:
-angleText = pygame.font.SysFont('helvetica', 25)
-normalText = pygame.font.SysFont('helvetica', 15)
-running = True
-lastX = 0
-lastY = 0
-lastAngle = 0
-pulling = False
-totalVelocity = 0
-circleRadius = 200
-oldRadius = circleRadius
-lastTotalVelocity = 0
-firing = False
+#Framerate
+frameRate = 144
+clock = pygame.time.Clock()
 
-#Base shapes and screen setup
-screen = pygame.display.set_mode([1000, 600])
-pygame.draw.circle(screen,(Colour().white),(0,600),circleRadius)
-pygame.draw.circle(screen,(Colour().black),(0,600),circleRadius - 2)
+#Base objects and Surfaces
+prestonPlanet1 = pygame.image.load("Pesot1.webp")
+prestonPlanet2 = pygame.image.load("Pesot2.webp")
+baseFont = pygame.font.Font(None,20)
+radius = 150
 
-
-#Event loop
-while running:
-
-    #Allows quiting
+#Event Loop
+while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            pygame.quit() 
+            exit()
 
-    #Angle line
-    x,y = pygame.mouse.get_pos()
-    if x - lastX > 2 or x -lastX < -2 and x != 0:
-        angle = math.atan((600 - y)/x)
-
-        #Draws line only to the circle edge
-        newX = 0 + (circleRadius * math.cos(math.atan((600 - y)/x))) - 2
-        newY = 600 - (circleRadius * math.sin(math.atan((600 - y)/x))) + 2
-        pygame.draw.circle(screen,(Colour().black),(0,600),oldRadius)
-        pygame.draw.circle(screen,(Colour().white),(0,600),circleRadius)
-        pygame.draw.circle(screen,(Colour().black),(0,600),circleRadius - 2)
-        pygame.draw.line(screen,(Colour().white),(0,600),(newX,newY),4)
-        oldRadius = circleRadius
-
-        #Adds angle text
-        angle = angle * 180 / math.pi
-        angle = math.floor(angle)
-        textSurface = angleText.render(str(lastAngle),False,Colour().black)
-        screen.blit(textSurface, (lastX * 1.05, lastY * 1.05 -60))
-
-        textSurface = angleText.render(str(angle),False,Colour().white)
-        screen.blit(textSurface, (newX * 1.05, newY * 1.05 - 60 ))
-        
-        lastX = newX
-        lastY = newY
-        lastAngle = angle
-
-    #Velocity input based on pull and circle resizing
-    if pygame.mouse.get_pressed(num_buttons = 3) == (True,False,False) and pulling is False:
-        startX, startY = pygame.mouse.get_pos()
-        pulling = True
-
-    elif pygame.mouse.get_pressed(num_buttons = 3) == (True,False,False) and pulling is True:
-        endX, endY = pygame.mouse.get_pos()
-        horizontalVelocity = startX - endX
-        verticalVelocity = startY - endY
-        totalVelocity = math.sqrt((horizontalVelocity**2) + (verticalVelocity**2))
-        circleRadius = 200 / ((totalVelocity/200) + 1)
-
-        #Adds text
-        textSurface = normalText.render(str(f"Input Velocity: {lastTotalVelocity}"),False,Colour().black)
-        screen.blit(textSurface, (0,0))
-
-        textSurface = normalText.render(str(f"Input Velocity: {totalVelocity}"),False,Colour().white)
-        screen.blit(textSurface, (0,0))
-        lastTotalVelocity = totalVelocity
-
-    elif pygame.mouse.get_pressed(num_buttons = 3) == (False,False,False) and pulling is True:
-        circleRadius = 200
-        pulling = False
-        firing = True
-        ballColour = Colour().randomiser()
-        ballX,ballY = 0,600
-    
-    if firing is True:
-
-        time.sleep(0.001)
-        pygame.draw.circle(screen,Colour().black,(ballX,ballY),15)
-        pygame.draw.circle(screen,ballColour,(ballX,ballY),2)
-        ballX = ballX + horizontalVelocity / 100
-        ballY = ballY + verticalVelocity / 100
-        verticalVelocity = verticalVelocity + (9.8 / 20)
-        pygame.draw.circle(screen,ballColour,(ballX,ballY),15)
-
-        if ballY > 600:
-            verticalVelocity = (verticalVelocity * 0.6) * -1 
-            ballY = 599
-            horizontalVelocity = horizontalVelocity * 0.8
-        
-        elif ballY < 0:
-            verticalVelocity = (verticalVelocity * 0.6) * -1 
-            ballY = 1
-            horizontalVelocity = horizontalVelocity * 0.8
-            
-
-        elif ballX > 1000:
-            horizontalVelocity = (horizontalVelocity * 0.6) * -1
-            ballX = 999
-
-        elif ballX < 0:
-            horizontalVelocity = (horizontalVelocity * 0.6) * -1
-            ballX = 1
-
-        if math.floor(horizontalVelocity) < 3 and math.floor(horizontalVelocity) > -3:
-            firing = False
-            pygame.draw.rect(screen,Colour().black,(0,0,1000,600))
+    screen.blit(angleCircle(radius,windowWidth, windowHeight),(0,0))
+    screen.blit(textBar(baseFont),(0, windowHeight/ 3 * 2))
+    screen.blit(trajectory(100,angleFinder(),windowWidth,windowHeight),(0,0))
 
 
-    pygame.display.flip()
+    pygame.display.update()
+    clock.tick(frameRate)
 
-pygame.quit()
 

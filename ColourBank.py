@@ -9,6 +9,7 @@ class Colour:
         self.aqua = (0,255,255)
         self.purple = (127.5,0,255)
         self.pink = (255,0,255)
+        self.darkGrey = (30,30,30)
         
     def randomiser(self):
         import random

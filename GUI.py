@@ -5,6 +5,8 @@ from physics import physics_sim  # Importing physics simulation function
 
 pygame.init()
 
+colour_bank = Colour()
+
 # Variables and functions:
 myText = pygame.font.SysFont('helvetica', 25)
 running = True
@@ -18,8 +20,8 @@ oldRadius = circleRadius
 
 # Base shapes and screen setup
 screen = pygame.display.set_mode([1000, 600])
-pygame.draw.circle(screen, Colour.white, (0, 600), circleRadius)
-pygame.draw.circle(screen, Colour.black, (0, 600), circleRadius - 2)
+pygame.draw.circle(screen, colour_bank.white, (0, 600), circleRadius)
+pygame.draw.circle(screen, colour_bank.black, (0, 600), circleRadius - 2)
 
 # Event loop
 while running:
@@ -37,19 +39,19 @@ while running:
         # Draws line only to the circle edge
         newX = 0 + (circleRadius * math.cos(math.atan((600 - y) / x))) - 2
         newY = 600 - (circleRadius * math.sin(math.atan((600 - y) / x))) + 2
-        pygame.draw.circle(screen, Colour.black, (0, 600), oldRadius)
-        pygame.draw.circle(screen, Colour.white, (0, 600), circleRadius)
-        pygame.draw.circle(screen, Colour.black, (0, 600), circleRadius - 2)
-        pygame.draw.line(screen, Colour.white, (0, 600), (newX, newY), 4)
+        pygame.draw.circle(screen, colour_bank.black, (0, 600), oldRadius)
+        pygame.draw.circle(screen, colour_bank.white, (0, 600), circleRadius)
+        pygame.draw.circle(screen, colour_bank.black, (0, 600), circleRadius - 2)
+        pygame.draw.line(screen, colour_bank.white, (0, 600), (newX, newY), 4)
         oldRadius = circleRadius
 
         # Adds angle text
         angle = angle * 180 / math.pi
         angle = math.floor(angle)
-        textSurface = myText.render(str(lastAngle), False, Colour.black)
+        textSurface = myText.render(str(lastAngle), False, colour_bank.black)
         screen.blit(textSurface, (lastX * 1.05, lastY * 1.05 - 60))
 
-        textSurface = myText.render(str(angle), False, Colour.white)
+        textSurface = myText.render(str(angle), False, colour_bank.white)
         screen.blit(textSurface, (newX * 1.05, newY * 1.05 - 60))
 
         lastX = newX
@@ -72,6 +74,11 @@ while running:
         circleRadius = 200
         pulling = False
         print(totalVelocity)
+    
+    horizontal_range, max_height = physics_sim(totalVelocity, lastAngle)
+    print("Horizontal Range:", horizontal_range)
+    print("Maximum Height:", max_height)
+
 
     # Updates screen
     pygame.display.flip()

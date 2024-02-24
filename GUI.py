@@ -4,6 +4,7 @@ from sys import exit
 from ColourBank import Colour
 from physics import physics_sim
 import math
+import random
 
 #Functions
 def angleCalculator(circleCentre):
@@ -63,7 +64,9 @@ baseFont = pygame.font.SysFont("helvetica",20)
 
 #Base objects and Surfaces
 
-prestonPlanet2 = pygame.image.load("Pesot2.png")
+callum_planet = pygame.image.load("Callum.png")
+preston_planet = pygame.image.load("Preston.png")
+current_planet = random.choice([callum_planet, preston_planet])
 
 def baseTextBar():
     textBar = pygame.Surface((windowWidth,windowHeight / 3))
@@ -126,8 +129,6 @@ while True:
     circleCourt.blit(angleBox,(x,y))
 
     #Click and pull response
-        
-
     if pygame.mouse.get_pressed() == (True,False,False) and not firing:
         mouseX1,mouseY1 = pygame.mouse.get_pos()
         firing = True
@@ -139,6 +140,7 @@ while True:
         ballAngle = angle
         firing = False
         ballInit = True
+        current_planet = random.choice([callum_planet, preston_planet])  # Selecting a random planet when firing
 
     if pygame.mouse.get_pressed() == (True,False,False):
         mouseX2,mouseY2 = pygame.mouse.get_pos()
@@ -190,13 +192,11 @@ while True:
     #Makes the ball move
     if shooting is True:
         if ballHorizontalVelocity > 0.5 or ballHorizontalVelocity < -0.5:
-            prestonPlanet2 = pygame.transform.scale(prestonPlanet2,(75,75))
-            circleCourt.blit(prestonPlanet2,(ballX,ballY))
+            current_planet = pygame.transform.scale(current_planet,(75,75))
+            circleCourt.blit(current_planet,(ballX,ballY))
             ballVerticalVelocity -= gravity 
             ballX += ballHorizontalVelocity
             ballY -= ballVerticalVelocity
-            
-
             if ballY > 600:
                 ballY = 599
                 ballVerticalVelocity = ballVerticalVelocity * -0.5

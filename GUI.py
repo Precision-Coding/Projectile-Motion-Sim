@@ -181,7 +181,7 @@ while True:
     if ballInit is True:
         ballVerticalVelocity = verticalVelocity / 10
         ballHorizontalVelocity = horizontalVelocity / 10
-        gravity = 9.81 / 100
+        gravity = 9.81 / 110
         ballX = circleX
         ballY = circleY
         shooting = True

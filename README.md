@@ -32,7 +32,7 @@ pip install pygame
 1. Run the simulation script:
 
 ```
-python GUI.py
+python main.py
 ```
 
 2. Interact with the simulation using the mouse:

@@ -1,4 +1,3 @@
-#Imports
 import pygame
 from sys import exit
 from ColourBank import Colour
@@ -8,6 +7,15 @@ import random
 
 #Functions
 def angleCalculator(circleCentre):
+    """
+    Calculates the angle between the mouse position and the circle centre.
+
+    Parameters:
+    circleCentre (tuple): The coordinates of the circle centre.
+
+    Returns:
+    float: The angle in radians.
+    """
     x, y = pygame.mouse.get_pos()
     centreX,centreY = circleCentre
     x = x - centreX
@@ -205,9 +213,10 @@ while True:
         shooting = False
 
     #Blitting to screen
+    background_color = (124, 252, 0)  # Green background
+    screen.fill(background_color)
     screen.blit(textBar,(0,windowHeight / 3 * 2))
     screen.blit(circleCourt,(0,0))
-    
 
     #Updates and tickrate
     pygame.display.update()

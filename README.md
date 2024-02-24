@@ -24,7 +24,7 @@ git clone https://github.com/pestopasta74/projectile-motion-simulation.git
 2. Install the required dependencies:
 
 ```
-pip install pygame
+pip install -r requirements.txt
 ```
 
 ## Usage

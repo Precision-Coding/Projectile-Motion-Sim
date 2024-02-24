@@ -187,7 +187,7 @@ while True:
     arcHorizontalVelocity = horizontalVelocity
 
     while (arcHorizontalVelocity > 0.1 or arcHorizontalVelocity < -0.1):
-        pygame.draw.circle(circleCourt, colours.white, (x, y + 24), 2)
+        pygame.draw.circle(circleCourt, colours.white, (x, y), 2)
         arcVerticalVelocity -= 9.81
         x += arcHorizontalVelocity
         y -= arcVerticalVelocity

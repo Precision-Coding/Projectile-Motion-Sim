@@ -166,8 +166,8 @@ while True:
     if pygame.mouse.get_pressed() == (True, False, False):
         mouseX2, mouseY2 = pygame.mouse.get_pos()
         xMove, yMove = mouseX1 - mouseX2, mouseY1 - mouseY2
-        inputVelocity = math.sqrt((xMove ** 2) + (yMove ** 2)) / 5
-        radius = (150 / (inputVelocity/100 + 1))
+        inputVelocity = math.sqrt((xMove ** 2) + (yMove ** 2)) / 5 
+        radius = (150 / (inputVelocity/150 + 1))
         xRange, maxHeight = physics_sim(inputVelocity, degreesAngle)
 
     # ARC drawing
@@ -186,8 +186,8 @@ while True:
     arcVerticalVelocity = verticalVelocity
     arcHorizontalVelocity = horizontalVelocity
 
-    while (arcHorizontalVelocity > 1 or arcHorizontalVelocity < -1):
-        pygame.draw.circle(circleCourt, colours.white, (x, y), 2)
+    while (arcHorizontalVelocity > 0.1 or arcHorizontalVelocity < -0.1):
+        pygame.draw.circle(circleCourt, colours.white, (x, y - 24), 2)
         arcVerticalVelocity -= 9.81
         x += arcHorizontalVelocity
         y -= arcVerticalVelocity
@@ -199,9 +199,9 @@ while True:
 
     # Ball initialiser
     if ballInit is True:
-        ballVerticalVelocity = verticalVelocity / 10
-        ballHorizontalVelocity = horizontalVelocity / 10
-        gravity = 9.81 / 100
+        ballVerticalVelocity = verticalVelocity / math.sqrt(frameRate) 
+        ballHorizontalVelocity = horizontalVelocity / math.sqrt(frameRate)
+        gravity = (9.81) / frameRate
         ballX = circleX
         ballY = circleY
         shooting = True
@@ -209,9 +209,9 @@ while True:
 
     # Makes the ball move
     if shooting is True:
-        if ballHorizontalVelocity > 0.5 or ballHorizontalVelocity < -0.5:
+        if ballHorizontalVelocity > 0.01 or ballHorizontalVelocity < -0.01:
             current_planet = pygame.transform.scale(current_planet, (24, 24))
-            circleCourt.blit(current_planet, (ballX + 24, ballY - 24))
+            circleCourt.blit(current_planet, (ballX - 24, ballY - 24))
             ballVerticalVelocity -= gravity
             ballX += ballHorizontalVelocity
             ballY -= ballVerticalVelocity

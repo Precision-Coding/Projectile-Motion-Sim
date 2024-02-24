@@ -9,9 +9,10 @@ class Colour:
         self.aqua = (0,255,255)
         self.purple = (127.5,0,255)
         self.pink = (255,0,255)
+        self.darkGrey = (30,30,30)
         
     def randomiser(self):
         import random
         colourList = [self.red,self.green,self.blue,self.yellow,self.aqua,self.purple,self.pink]
-        return colourList[random.randint(0,len(colourList))]
+        return colourList[random.randint(0,len(colourList)-1)]
 

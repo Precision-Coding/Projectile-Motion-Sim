@@ -133,7 +133,7 @@ while True:
     verticalVelocityBox = baseFont.render(f"Vertical Velocity: {str(math.floor(math.sqrt(math.pow(verticalVelocity, 2))))} m/s", True, colours.white)
     textBar.blit(verticalVelocityBox, (windowWidth / 4 * 1 + 175, 100))
 
-    screen.blit(textBar, (0, (windowHeight * 2/3) + 24))
+    screen.blit(textBar, (0, (windowHeight * 2 / 3)))
 
     # Circle Changes
 
@@ -201,7 +201,7 @@ while True:
     if ballInit is True:
         ballVerticalVelocity = verticalVelocity / 10
         ballHorizontalVelocity = horizontalVelocity / 10
-        gravity = 9.81 / 110
+        gravity = 9.81 / 100
         ballX = circleX
         ballY = circleY
         shooting = True
@@ -211,7 +211,7 @@ while True:
     if shooting is True:
         if ballHorizontalVelocity > 0.5 or ballHorizontalVelocity < -0.5:
             current_planet = pygame.transform.scale(current_planet, (24, 24))
-            circleCourt.blit(current_planet, (ballX, ballY))
+            circleCourt.blit(current_planet, (ballX + 24, ballY - 24))
             ballVerticalVelocity -= gravity
             ballX += ballHorizontalVelocity
             ballY -= ballVerticalVelocity

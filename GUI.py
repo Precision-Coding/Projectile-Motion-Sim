@@ -43,7 +43,7 @@ radius = 150
 circleCentre = windowWidth / 2,windowHeight / 3 * 2
 mouseX1,mouseY1 = 0,0
 firing = False
-inputVelocity = 100
+inputVelocity = 0
 xRange = 0
 maxHeight = 0
 horizontalVelocity = 0
@@ -93,22 +93,22 @@ while True:
     if firing is not True:
         degreesAngle = math.floor(radiansToDegrees(angleCalculator(circleCentre)))
 
-    angleBox = baseFont.render(f"Firing Angle: {str(degreesAngle)}",True,Colour().white)
+    angleBox = baseFont.render(f"Firing Angle: {str(degreesAngle)} Degrees",True,Colour().white)
     textBar.blit(angleBox,(175,0))
 
-    velocityBox = baseFont.render(f"Input Velocity: {str(math.floor(inputVelocity))}",True,Colour().white)
+    velocityBox = baseFont.render(f"Input Velocity: {str(math.floor(inputVelocity))} m/s",True,Colour().white)
     textBar.blit(velocityBox,(windowWidth / 4 * 1 + 175,0))
     
-    maxHeightBox = baseFont.render(f"Max Height: {str(math.floor(maxHeight))}",True,Colour().white)
+    maxHeightBox = baseFont.render(f"Max Height: {str(math.floor(maxHeight))} m",True,Colour().white)
     textBar.blit(maxHeightBox,(windowWidth / 4 * 2 + 175,0))
 
-    xRangeBox = baseFont.render(f"Horizontal Range: {str(math.floor(xRange))}",True,Colour().white)
+    xRangeBox = baseFont.render(f"Horizontal Range: {str(math.floor(math.sqrt(math.pow(xRange,2))))} m",True,Colour().white)
     textBar.blit(xRangeBox,(windowWidth / 4 * 3 + 175,0))
 
-    horizontalVelocityBox = baseFont.render(f"Horizontal Velocity: {str(math.floor(horizontalVelocity))}",True,Colour().white)
+    horizontalVelocityBox = baseFont.render(f"Horizontal Velocity: {str(math.floor(math.sqrt(math.pow(horizontalVelocity,2))))} m/s",True,Colour().white)
     textBar.blit(horizontalVelocityBox,(windowWidth / 4 * 0 + 175,100))
 
-    verticalVelocityBox = baseFont.render(f"Vertical Velocity: {str(math.floor(verticalVelocity))}",True,Colour().white)
+    verticalVelocityBox = baseFont.render(f"Vertical Velocity: {str(math.floor(math.sqrt(math.pow(verticalVelocity,2))))} m/s",True,Colour().white)
     textBar.blit(verticalVelocityBox,(windowWidth / 4 * 1 + 175,100))
 
     #Circle Changes
@@ -177,7 +177,7 @@ while True:
 
 
     
-
+    #Ballinitialiser
     if ballInit is True:
         ballVerticalVelocity = verticalVelocity / 10
         ballHorizontalVelocity = horizontalVelocity / 10
@@ -187,7 +187,7 @@ while True:
         shooting = True
         ballInit = False
         
-
+    #Makes the ball move
     if shooting is True:
         if ballHorizontalVelocity > 0.5 or ballHorizontalVelocity < -0.5:
             prestonPlanet2 = pygame.transform.scale(prestonPlanet2,(75,75))

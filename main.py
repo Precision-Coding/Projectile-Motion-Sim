@@ -33,39 +33,39 @@ def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVe
     degAngle = radAngle * 180 / math.pi
     displayDegAngle = math.floor(degAngle)
     angleBox = baseFont.render(f"Firing Angle: {displayDegAngle} Degrees", True, colours.white)
-    angleBoxRect = angleBox.get_rect(midtop = (infoBarWidth / 6 * 1 , 0 + textOffSet))
+    angleBoxRect = angleBox.get_rect(midtop = (infoBarWidth / 6 * 1, 0 + textOffSet))
     infoBar.blit(angleBox, angleBoxRect)
 
     displayVelocity = math.floor(inputVelocity)
     velocityBox = baseFont.render(f"Input Velocity: {displayVelocity} m/s", True, colours.white)
-    velocityBoxRect = velocityBox.get_rect(midtop = (infoBarWidth / 6 * 3 , 0 + textOffSet))
+    velocityBoxRect = velocityBox.get_rect(midtop = (infoBarWidth / 6 * 3, 0 + textOffSet))
     infoBar.blit(velocityBox, velocityBoxRect)
 
     horizontalRange, maxHeight = physics_sim(inputVelocity,degAngle)
 
     dislayMaxHeight = math.floor(maxHeight)
     maxHeightBox = baseFont.render(f"Max Height: {dislayMaxHeight} m", True, colours.white)
-    maxHeightBoxRect = maxHeightBox.get_rect(midtop = (infoBarWidth / 6 * 5 , 0 + textOffSet))
+    maxHeightBoxRect = maxHeightBox.get_rect(midtop = (infoBarWidth / 6 * 5, 0 + textOffSet))
     infoBar.blit(maxHeightBox, maxHeightBoxRect)
 
     displayHorizontalRange = math.floor(math.sqrt(horizontalRange ** 2))
     xRangeBox = baseFont.render(f"Horizontal Range: {displayHorizontalRange} m", True, colours.white)
-    xRangeBoxRect = xRangeBox.get_rect(midtop = (infoBarWidth / 6 * 1 , 100 + textOffSet))
+    xRangeBoxRect = xRangeBox.get_rect(midtop = (infoBarWidth / 6 * 1, 100 + textOffSet))
     infoBar.blit(xRangeBox, xRangeBoxRect)
 
     displayHVelocity = math.floor(math.sqrt(hVelocity ** 2))
     hvBox = baseFont.render(f"Horizontal Velocity: {displayHVelocity} m/s", True, colours.white)
-    hvBoxRect = hvBox.get_rect(midtop = (infoBarWidth / 6 * 3 , 100 + textOffSet))
+    hvBoxRect = hvBox.get_rect(midtop = (infoBarWidth / 6 * 3, 100 + textOffSet))
     infoBar.blit(hvBox, hvBoxRect)
 
     displayVVelocity = math.floor(math.sqrt(vVelocity**2))
     vvBox = baseFont.render(f"Vertical Velocity: {displayVVelocity} m/s", True, colours.white)
-    vvBoxRect = vvBox.get_rect(midtop = (infoBarWidth / 6 * 5 , 100 + textOffSet))
+    vvBoxRect = vvBox.get_rect(midtop = (infoBarWidth / 6 * 5, 100 + textOffSet))
     infoBar.blit(vvBox, vvBoxRect)
 
     return infoBar
 
-def courtCreate(windowWidth, windowHeight, radius,radAngle):
+def courtCreate(windowWidth, windowHeight, radius, radAngle):
     lineXOffSet, lineYOffSet = angleToCircumference(mouseAngle(circleCenter), radius)
     # Court
     courtWidth = int(windowWidth)
@@ -76,12 +76,12 @@ def courtCreate(windowWidth, windowHeight, radius,radAngle):
     # AngleCircle
     circleSurf = pygame.Surface((radius * 4, radius * 4))
     circleSurf.fill(colours.darkDarkGrey)
-    pygame.draw.circle(circleSurf, colours.white, (radius * 2, radius * 2), radius,2)
-    pygame.draw.line(circleSurf, colours.white, (radius * 2,radius * 2),((radius * 2) + lineXOffSet, (radius * 2) - lineYOffSet ),2)
+    pygame.draw.circle(circleSurf, colours.white, (radius * 2, radius * 2), radius, 2)
+    pygame.draw.line(circleSurf, colours.white, (radius * 2,radius * 2), ((radius * 2) + lineXOffSet, (radius * 2) - lineYOffSet ), 2)
 
     # Angle text
     degAngle = math.floor(radAngle * 180 / math.pi)
-    degAngleBox = baseFont.render(str(degAngle),False,colours.white)
+    degAngleBox = baseFont.render(str(degAngle), False, colours.white)
     degAngleBoxRect = degAngleBox.get_rect(center = ((radius * 2 + lineXOffSet * 1.1), (radius * 2 - lineYOffSet * 1.1) - 10))
     circleSurf.blit(degAngleBox, degAngleBoxRect)
 
@@ -91,13 +91,13 @@ def courtCreate(windowWidth, windowHeight, radius,radAngle):
 
     return court
 
-def trajectoryCreate(hVelocity,vVelocity,circleCenter,surface,windowHeight):
+def trajectoryCreate(hVelocity, vVelocity, circleCenter, surface, windowHeight):
     x,y =  circleCenter
-    vVelocity = vVelocity * 1
-    hVelocity = hVelocity * 1
+    vVelocity = vVelocity
+    hVelocity = hVelocity 
     gravity = 9.81 / 10
     bounces = 0
-    floor = windowHeight / 3 * 2
+    floor = windowHeight * 2 / 3
 
     while bounces < 6:
         if y > floor:
@@ -106,7 +106,7 @@ def trajectoryCreate(hVelocity,vVelocity,circleCenter,surface,windowHeight):
             hVelocity = hVelocity * 0.7
             bounces += 1
 
-        pygame.draw.circle(surface, colours.white, (x,y), 1)
+        pygame.draw.circle(surface, colours.white, (x, y), 1)
         vVelocity -= gravity
         x += hVelocity
         y -= vVelocity
@@ -181,13 +181,14 @@ while True:
             pygame.quit()
             exit()
 
+    # Screen stuff
     hVelocity = inputVelocity(circleCenter) * math.cos(mouseAngle(circleCenter))
     vVelocity = inputVelocity(circleCenter) * math.sin(mouseAngle(circleCenter))
     infoBar = infoBarCreate(windowWidth, windowHeight, mouseAngle(circleCenter), inputVelocity(circleCenter), hVelocity, vVelocity)
     court = courtCreate(windowWidth, windowHeight, radius, mouseAngle(circleCenter))
-    trajectory = trajectoryCreate(hVelocity,vVelocity,circleCenter, court,windowHeight)
+    trajectory = trajectoryCreate(hVelocity, vVelocity, circleCenter, court, windowHeight)
 
-    #Ball shooter
+    # Ball shooter
     if pygame.mouse.get_pressed() == (True, False, False):
         # Planet Selector and general initialisation
         totalVelocity = inputVelocity(circleCenter)
@@ -200,6 +201,7 @@ while True:
         floor = windowHeight / 3 * 2
         shooting = True
 
+    #Movement
     if shooting:
         if y > floor:
             y = floor - 1

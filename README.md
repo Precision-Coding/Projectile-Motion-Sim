@@ -4,7 +4,7 @@ This project is a simple simulation of projectile motion implemented using Pygam
 ## Features
 
 - Users can adjust the launch angle of the projectile by moving the mouse cursor.
-- Users can adjust the initial velocity of the projectile by clicking and dragging the mouse.
+- Users can adjust the initial velocity of the projectile by moving the mouse on the screen.
 - Realistic projectile motion simulation based on physics principles.
 - Visualization of the trajectory of the projectile.
 
@@ -37,9 +37,11 @@ python main.py
 
 2. Interact with the simulation using the mouse:
    - Move the mouse to adjust the launch angle.
-   - Click and drag to adjust the initial velocity.
+   - Move the mouse to change the input velocity.
+   - Click the mouse to launch a projectile
 
-3. Observe the trajectory of the projectile on the screen.
+3. Observe the trajectory of the projectile and the projectile on the screen.
+   
 
 ## License
 

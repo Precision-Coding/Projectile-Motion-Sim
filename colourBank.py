@@ -13,15 +13,17 @@ class Colour:
         self.magenta = (127, 0, 255)
         self.pink = (255, 0, 255)
         self.darkGrey = (30, 30, 30)
+        self.darkDarkGrey = (15,15,15)
 
     def getRandomColour(self) -> tuple[int]:
         colourList = [
             self.red,
             self.green,
             self.blue,
-            self.cyan,
+            self.cyan, # it was aqua why did you change it to cyan you meanie
             self.magenta,
             self.yellow,
             self.pink
         ]
+        
         return random.choice(colourList)

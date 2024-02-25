@@ -27,7 +27,7 @@ def infoBarCreate(windowWidth, windowHeight):
         infoBar.blit(scaleTextBox, scaleTextBoxRect)
     
 
-    # Subject to change
+    # Text subject to change
     textOffSet = 100
     angleBox = baseFont.render(f"Firing Angle:  Degrees", True, colours.white)
     angleBoxRect = angleBox.get_rect(midtop = (infoBarWidth / 6 * 1 , 0 + textOffSet))
@@ -55,7 +55,8 @@ def infoBarCreate(windowWidth, windowHeight):
 
     return infoBar
 
-def courtCreate(windowWidth, windowHeight, radius):
+def courtCreate(windowWidth, windowHeight, radius,radAngle):
+    lineXOffSet, lineYOffSet = angleToCircumference(mouseAngle(circleCenter), radius)
     # Court
     courtWidth = int(windowWidth)
     courtHeight = int(windowHeight * 2 / 3)
@@ -63,17 +64,52 @@ def courtCreate(windowWidth, windowHeight, radius):
     court.fill(colours.darkDarkGrey)
 
     # AngleCircle
-    circleSurf = pygame.Surface((radius * 2, radius * 2))
+    circleSurf = pygame.Surface((radius * 4, radius * 4))
     circleSurf.fill(colours.darkDarkGrey)
-    pygame.draw.circle(circleSurf, colours.white, (radius, radius), radius,2)
+    pygame.draw.circle(circleSurf, colours.white, (radius * 2, radius * 2), radius,2)
+    pygame.draw.line(circleSurf, colours.white, (radius * 2,radius * 2),((radius * 2) + lineXOffSet, (radius * 2) - lineYOffSet ),2)
+
+    # Angle text
+    degAngle = math.floor(radAngle * 180 / math.pi)
+    degAngleBox = baseFont.render(str(degAngle),False,colours.white)
+    degAngleBoxRect = degAngleBox.get_rect(center = ((radius * 2 + lineXOffSet * 1.2), (radius * 2 - lineYOffSet * 1.2)))
+    circleSurf.blit(degAngleBox, degAngleBoxRect)
+
+    #Final Court blit
     circleSurfRect = circleSurf.get_rect(center = (courtWidth / 2, courtHeight))
     court.blit(circleSurf, (circleSurfRect))
 
 
 
+
     return court
 
+def mouseAngle(circleCenter):
+    cursorX, cursorY = pygame.mouse.get_pos()
+    centerX, centerY = circleCenter
+    respectiveX = cursorX - centerX
+    respectiveY = centerY - cursorY
 
+    if respectiveY < 0:
+        radAngle = 0
+    
+    else:
+        if respectiveX == 0:
+            radAngle = math.pi / 2
+
+        elif respectiveX < 0:
+            radAngle = math.pi + math.atan(respectiveY / respectiveX)
+
+        elif respectiveX > 0:
+            radAngle = math.atan(respectiveY / respectiveX)
+
+    return radAngle
+
+def angleToCircumference(radAngle, radius):
+    y = radius * math.sin(radAngle)
+    x = radius * math.cos(radAngle)
+    print(x,y)
+    return x, y
 
 # Framerate
 frameRate = 60
@@ -82,6 +118,7 @@ clock = pygame.time.Clock()
 # Stuff
 colours = Colour()
 windowWidth, windowHeight = 1800, 900
+circleCenter = (windowWidth / 2, windowHeight * 2 / 3)
 radius = 150
 
 # Screen Setup
@@ -107,12 +144,13 @@ while True:
             exit()
     
     infoBar = infoBarCreate(windowWidth, windowHeight)
-    court = courtCreate(windowWidth, windowHeight,radius)
+    court = courtCreate(windowWidth, windowHeight, radius,mouseAngle(circleCenter))
 
     # Blitting to screen
-    screen.blit(infoBar, (0, windowHeight * 2 / 3))
-    screen.blit(court, (0,0))
     
+    screen.blit(infoBar, (0, windowHeight * 2 / 3))
+    screen.blit(court, (0, 0))
+
     # Updates and tickrate
     pygame.display.update()
     clock.tick(frameRate)

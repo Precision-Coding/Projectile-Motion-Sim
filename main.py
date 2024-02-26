@@ -50,17 +50,17 @@ def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVe
 
     displayHorizontalRange = math.floor(math.sqrt(horizontalRange ** 2))
     xRangeBox = baseFont.render(f"Horizontal Range: {displayHorizontalRange} m", True, colours.white)
-    xRangeBoxRect = xRangeBox.get_rect(midtop = (infoBarWidth / 6 * 1, 100 + textOffSet))
+    xRangeBoxRect = xRangeBox.get_rect(midtop = (infoBarWidth / 6 * 1, infoBarHeight / 3 + textOffSet))
     infoBar.blit(xRangeBox, xRangeBoxRect)
 
     displayHVelocity = math.floor(math.sqrt(hVelocity ** 2))
     hvBox = baseFont.render(f"Horizontal Velocity: {displayHVelocity} m/s", True, colours.white)
-    hvBoxRect = hvBox.get_rect(midtop = (infoBarWidth / 6 * 3, 100 + textOffSet))
+    hvBoxRect = hvBox.get_rect(midtop = (infoBarWidth / 6 * 3, infoBarHeight / 3 + textOffSet))
     infoBar.blit(hvBox, hvBoxRect)
 
     displayVVelocity = math.floor(math.sqrt(vVelocity**2))
     vvBox = baseFont.render(f"Vertical Velocity: {displayVVelocity} m/s", True, colours.white)
-    vvBoxRect = vvBox.get_rect(midtop = (infoBarWidth / 6 * 5, 100 + textOffSet))
+    vvBoxRect = vvBox.get_rect(midtop = (infoBarWidth / 6 * 5, infoBarHeight / 3 + textOffSet))
     infoBar.blit(vvBox, vvBoxRect)
 
     return infoBar
@@ -153,7 +153,7 @@ clock = pygame.time.Clock()
 
 # Stuff
 colours = Colour()
-windowWidth, windowHeight = 1800, 900
+windowWidth, windowHeight = 1200, 600
 circleCenter = (windowWidth / 2, windowHeight * 2 / 3)
 radius = 150
 shooting = False

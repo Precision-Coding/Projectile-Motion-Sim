@@ -6,43 +6,145 @@ import math
 import random
 
 
-colours = Colour()
-
 # Functions
-def angleCalculator(circleCentre):
-    """
-    Calculates the angle between the mouse position and the circle centre.
 
-    Parameters:
-    circleCentre (tuple): The coordinates of the circle centre.
+def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVelocity):
+    # Constant
+    infoBarWidth = int(windowWidth)
+    infoBarHeight = int(windowHeight / 3)
+    infoBar = pygame.Surface((infoBarWidth, infoBarHeight))
+    infoBar.fill(colours.darkGrey)
+    borderLine = pygame.draw.line(infoBar, colours.white, (0, 0), (infoBarWidth, 0), 2)
+    scaleLineLength = 30
 
-    Returns:
-    float: The angle in radians.
-    """
-    x, y = pygame.mouse.get_pos()
-    centreX, centreY = circleCentre
-    x -= centreX
-    y = centreY - y
+    # Makes the scale
+    for multiplier in range(1, int(windowWidth / 100)):
+        lineXpos = infoBarWidth * multiplier / (windowWidth / 100)
+        scaleLine = pygame.draw.line(infoBar, colours.white, (lineXpos, 0), (lineXpos, scaleLineLength), 2)
+        measurement = (multiplier - int(windowWidth / 200)) * 10
+        scaleTextBox = baseFont.render(f"{str(measurement)} m", False, colours.white)
+        scaleTextBoxRect = scaleTextBox.get_rect(midtop = (lineXpos, scaleLineLength + 10))
+        infoBar.blit(scaleTextBox, scaleTextBoxRect)
+    
 
-    if x != 0:
-        radAngle = math.atan(y/x)
+    # Text subject to change
+    textOffSet = 100
 
+    degAngle = radAngle * 180 / math.pi
+    displayDegAngle = math.floor(degAngle)
+    angleBox = baseFont.render(f"Firing Angle: {displayDegAngle} Degrees", True, colours.white)
+    angleBoxRect = angleBox.get_rect(midtop = (infoBarWidth / 6 * 1, 0 + textOffSet))
+    infoBar.blit(angleBox, angleBoxRect)
+
+    displayVelocity = math.floor(inputVelocity)
+    velocityBox = baseFont.render(f"Input Velocity: {displayVelocity} m/s", True, colours.white)
+    velocityBoxRect = velocityBox.get_rect(midtop = (infoBarWidth / 6 * 3, 0 + textOffSet))
+    infoBar.blit(velocityBox, velocityBoxRect)
+
+    horizontalRange, maxHeight = physics_sim(inputVelocity,degAngle)
+
+    dislayMaxHeight = math.floor(maxHeight)
+    maxHeightBox = baseFont.render(f"Max Height: {dislayMaxHeight} m", True, colours.white)
+    maxHeightBoxRect = maxHeightBox.get_rect(midtop = (infoBarWidth / 6 * 5, 0 + textOffSet))
+    infoBar.blit(maxHeightBox, maxHeightBoxRect)
+
+    displayHorizontalRange = math.floor(math.sqrt(horizontalRange ** 2))
+    xRangeBox = baseFont.render(f"Horizontal Range: {displayHorizontalRange} m", True, colours.white)
+    xRangeBoxRect = xRangeBox.get_rect(midtop = (infoBarWidth / 6 * 1, 100 + textOffSet))
+    infoBar.blit(xRangeBox, xRangeBoxRect)
+
+    displayHVelocity = math.floor(math.sqrt(hVelocity ** 2))
+    hvBox = baseFont.render(f"Horizontal Velocity: {displayHVelocity} m/s", True, colours.white)
+    hvBoxRect = hvBox.get_rect(midtop = (infoBarWidth / 6 * 3, 100 + textOffSet))
+    infoBar.blit(hvBox, hvBoxRect)
+
+    displayVVelocity = math.floor(math.sqrt(vVelocity**2))
+    vvBox = baseFont.render(f"Vertical Velocity: {displayVVelocity} m/s", True, colours.white)
+    vvBoxRect = vvBox.get_rect(midtop = (infoBarWidth / 6 * 5, 100 + textOffSet))
+    infoBar.blit(vvBox, vvBoxRect)
+
+    return infoBar
+
+def courtCreate(windowWidth, windowHeight, radius, radAngle):
+    lineXOffSet, lineYOffSet = angleToCircumference(mouseAngle(circleCenter), radius)
+    # Court
+    courtWidth = int(windowWidth)
+    courtHeight = int(windowHeight * 2 / 3)
+    court = pygame.Surface((courtWidth, courtHeight))
+    court.fill(colours.darkDarkGrey)
+
+    # AngleCircle
+    circleSurf = pygame.Surface((radius * 4, radius * 4))
+    circleSurf.fill(colours.darkDarkGrey)
+    pygame.draw.circle(circleSurf, colours.white, (radius * 2, radius * 2), radius, 2)
+    pygame.draw.line(circleSurf, colours.white, (radius * 2,radius * 2), ((radius * 2) + lineXOffSet, (radius * 2) - lineYOffSet ), 2)
+
+    # Angle text
+    degAngle = math.floor(radAngle * 180 / math.pi)
+    degAngleBox = baseFont.render(str(degAngle), False, colours.white)
+    degAngleBoxRect = degAngleBox.get_rect(center = ((radius * 2 + lineXOffSet * 1.1), (radius * 2 - lineYOffSet * 1.1) - 10))
+    circleSurf.blit(degAngleBox, degAngleBoxRect)
+
+    #Final Court blit
+    circleSurfRect = circleSurf.get_rect(center = (courtWidth / 2, courtHeight))
+    court.blit(circleSurf, (circleSurfRect))
+
+    return court
+
+def trajectoryCreate(hVelocity, vVelocity, circleCenter, surface, windowHeight):
+    x,y =  circleCenter
+    vVelocity = vVelocity
+    hVelocity = hVelocity 
+    gravity = 9.81 / 10
+    bounces = 0
+    floor = windowHeight * 2 / 3
+
+    while bounces < 6:
+        if y > floor:
+            y = floor - 1
+            vVelocity = vVelocity * -0.7
+            hVelocity = hVelocity * 0.7
+            bounces += 1
+
+        pygame.draw.circle(surface, colours.white, (x, y), 1)
+        vVelocity -= gravity
+        x += hVelocity
+        y -= vVelocity
+
+def mouseAngle(circleCenter):
+    cursorX, cursorY = pygame.mouse.get_pos()
+    centerX, centerY = circleCenter
+    respectiveX = cursorX - centerX
+    respectiveY = centerY - cursorY
+
+    if respectiveY < 0:
+        radAngle = 0
+    
     else:
-        radAngle = math.pi / 2
+        if respectiveX == 0:
+            radAngle = math.pi / 2
+
+        elif respectiveX < 0:
+            radAngle = math.pi + math.atan(respectiveY / respectiveX)
+
+        elif respectiveX > 0:
+            radAngle = math.atan(respectiveY / respectiveX)
 
     return radAngle
 
-def radiansToDegrees(radianAngle):
-    return radianAngle * 180 / math.pi
+def angleToCircumference(radAngle, radius):
+    y = radius * math.sin(radAngle)
+    x = radius * math.cos(radAngle)
+    return x, y
 
-def angledLineMeetsCircle(radianAngle, radius):
-    x = radius * math.cos(radianAngle)
-    y = radius * math.sin(radianAngle)
+def inputVelocity(circleCenter):
+    centerX, centerY = circleCenter
+    cursorX, cursorY = pygame.mouse.get_pos()
+    respectiveX = cursorX - centerX
+    respectiveY = centerY - cursorY
+    inputVelocity = math.sqrt((respectiveX ** 2) + (respectiveY ** 2))
+    return inputVelocity / 15
 
-    if radianAngle >= 0:
-        return x, -y
-    else:
-        return -x, y
 
 
 # Framerate
@@ -50,180 +152,79 @@ frameRate = 60
 clock = pygame.time.Clock()
 
 # Stuff
+colours = Colour()
 windowWidth, windowHeight = 1800, 900
+circleCenter = (windowWidth / 2, windowHeight * 2 / 3)
 radius = 150
-circleCentre = windowWidth / 2, windowHeight / 3 * 2
-mouseX1, mouseY1 = 0, 0
-firing = False
-inputVelocity = 0
-xRange = 0
-maxHeight = 0
-horizontalVelocity = 0
-verticalVelocity = 0
-ballInit = False
 shooting = False
-
 
 # Screen Setup
 pygame.init()
 screen = pygame.display.set_mode((windowWidth, windowHeight))
-pygame.display.set_caption("Projectile Motion Sim 2.0")
+pygame.display.set_caption("Projectile Motion Sim 3")
 
 # Font
 pygame.font.init()
 baseFont = pygame.font.SysFont("helvetica", 20)
 
 # Base objects and Surfaces
-callum_planet = pygame.image.load("assets/Callum.png")
-preston_planet = pygame.image.load("assets/Preston.png")
-current_planet = random.choice([callum_planet, preston_planet])
+callum_planet = pygame.image.load("assets/Callum.png").convert_alpha()
+preston_planet = pygame.image.load("assets/Preston.png").convert_alpha()
 
-
-def baseTextBar():
-    textBar = pygame.Surface((windowWidth, windowHeight / 3))
-    textBar.fill(colours.darkGrey)
-    pygame.draw.line(textBar, colours.white, (0, 0, ), (windowWidth, 0), 2)
-    return textBar
-
-
-def baseCircleCourt():
-    circleCourt = pygame.Surface((windowWidth, windowHeight / 3 * 2))
-    pygame.draw.circle(circleCourt, colours.white, (circleCentre), radius, 2)
-    return circleCourt
-
-
-def baseBallCourt():
-    ballCourt = pygame.Surface((windowWidth, windowHeight / 3 * 2))
-    return ballCourt
-
-
-ballYCutoff = 600
 
 # Event Loop
 while True:
-    circleX, circleY = circleCentre
+
+    # Game ender
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
 
-    # background_color = colours.green  # Green background
-    # screen.fill(background_color)
+    # Screen stuff
+    hVelocity = inputVelocity(circleCenter) * math.cos(mouseAngle(circleCenter))
+    vVelocity = inputVelocity(circleCenter) * math.sin(mouseAngle(circleCenter))
+    infoBar = infoBarCreate(windowWidth, windowHeight, mouseAngle(circleCenter), inputVelocity(circleCenter), hVelocity, vVelocity)
+    court = courtCreate(windowWidth, windowHeight, radius, mouseAngle(circleCenter))
+    trajectory = trajectoryCreate(hVelocity, vVelocity, circleCenter, court, windowHeight)
 
-    # Text Bar Changes
-    textBar = baseTextBar()
-    if firing is not True:
-        degreesAngle = math.floor(radiansToDegrees(angleCalculator(circleCentre)))
-
-    angleBox = baseFont.render(f"Firing Angle: {str(degreesAngle)} Degrees", True, colours.white)
-    textBar.blit(angleBox, (175, 0))
-
-    velocityBox = baseFont.render(f"Input Velocity: {str(math.floor(inputVelocity))} m/s", True, colours.white)
-    textBar.blit(velocityBox, (windowWidth / 4 * 1 + 175, 0))
-
-    maxHeightBox = baseFont.render(f"Max Height: {str(math.floor(maxHeight))} m", True, colours.white)
-    textBar.blit(maxHeightBox, (windowWidth / 4 * 2 + 175, 0))
-
-    xRangeBox = baseFont.render(f"Horizontal Range: {str(math.floor(math.sqrt(math.pow(xRange, 2))))} m", True, colours.white)
-    textBar.blit(xRangeBox, (windowWidth / 4 * 3 + 175, 0))
-
-    horizontalVelocityBox = baseFont.render(f"Horizontal Velocity: {str(math.floor(math.sqrt(math.pow(horizontalVelocity, 2))))} m/s", True, colours.white)
-    textBar.blit(horizontalVelocityBox, (windowWidth / 4 * 0 + 175, 100))
-
-    verticalVelocityBox = baseFont.render(f"Vertical Velocity: {str(math.floor(math.sqrt(math.pow(verticalVelocity, 2))))} m/s", True, colours.white)
-    textBar.blit(verticalVelocityBox, (windowWidth / 4 * 1 + 175, 100))
-
-    screen.blit(textBar, (0, (windowHeight * 2 / 3)))
-
-    # Circle Changes
-
-    # Line
-    circleCourt = baseCircleCourt()
-    x, y = angledLineMeetsCircle(degreesAngle/ 180 * math.pi, radius)
-    x, y = x + circleX, y + circleY
-    pygame.draw.line(circleCourt, colours.white, circleCentre, (x, y), 3)
-
-    # AngleText
-    x, y = angledLineMeetsCircle(degreesAngle / 180 * math.pi, radius * 1.25)
-    x, y = x + circleX, y + circleY
-    angleBox = baseFont.render(str(degreesAngle), True, colours.white)
-    circleCourt.blit(angleBox, (x, y))
-
-    # Click and pull response
-    if pygame.mouse.get_pressed() == (True, False, False) and not firing:
-        mouseX1, mouseY1 = pygame.mouse.get_pos()
-        firing = True
-
-    if pygame.mouse.get_pressed() == (False, False, False) and firing:
-        mouseX2, mouseY2 = pygame.mouse.get_pos()
-        radius = 150
-        ballVelocity = inputVelocity
-        ballAngle = angle
-        firing = False
-        ballInit = True
-        current_planet = random.choice([callum_planet, preston_planet])  # Selecting a random planet when firing
-
+    # Ball shooter
     if pygame.mouse.get_pressed() == (True, False, False):
-        mouseX2, mouseY2 = pygame.mouse.get_pos()
-        xMove, yMove = mouseX1 - mouseX2, mouseY1 - mouseY2
-        inputVelocity = math.sqrt((xMove ** 2) + (yMove ** 2)) / 5 
-        radius = (150 / (inputVelocity/150 + 1))
-        xRange, maxHeight = physics_sim(inputVelocity, degreesAngle)
-
-    # ARC drawing
-    x, y = circleCentre
-
-    angle = degreesAngle/ 180 * math.pi
-
-    if angle >= 0:
-        verticalVelocity = inputVelocity * math.sin(degreesAngle/ 180 * math.pi)
-        horizontalVelocity = inputVelocity * math.cos(degreesAngle/ 180 * math.pi)
-
-    elif angle < 0:
-        verticalVelocity = -1 * inputVelocity * math.sin(degreesAngle/ 180 * math.pi)
-        horizontalVelocity = -1 * inputVelocity * math.cos(degreesAngle/ 180 * math.pi)
-
-    arcVerticalVelocity = verticalVelocity
-    arcHorizontalVelocity = horizontalVelocity
-
-    while (arcHorizontalVelocity > 0.1 or arcHorizontalVelocity < -0.1):
-        pygame.draw.circle(circleCourt, colours.white, (x, y), 2)
-        arcVerticalVelocity -= 9.81
-        x += arcHorizontalVelocity
-        y -= arcVerticalVelocity
-
-        if y > ballYCutoff:
-            y = ballYCutoff - 1
-            arcVerticalVelocity = arcVerticalVelocity * -0.5
-            arcHorizontalVelocity = arcHorizontalVelocity * 0.8
-
-    # Ball initialiser
-    if ballInit is True:
-        ballVerticalVelocity = verticalVelocity / math.sqrt(frameRate) 
-        ballHorizontalVelocity = horizontalVelocity / math.sqrt(frameRate)
-        gravity = (9.81) / frameRate
-        ballX = circleX
-        ballY = circleY
+        # Planet Selector and general initialisation
+        totalVelocity = inputVelocity(circleCenter)
+        current_planet = random.choice([callum_planet, preston_planet])
+        x,y =  circleCenter
+        ballVVelocity = vVelocity * 1
+        ballHVelocity = hVelocity * 1
+        gravity = 9.81 / 10
+        bounces = 0
+        floor = windowHeight / 3 * 2
         shooting = True
-        ballInit = False
 
-    # Makes the ball move
-    if shooting is True:
-        if ballHorizontalVelocity > 0.01 or ballHorizontalVelocity < -0.01:
-            current_planet = pygame.transform.scale(current_planet, (24, 24))
-            circleCourt.blit(current_planet, (ballX - 24, ballY - 24))
-            ballVerticalVelocity -= gravity
-            ballX += ballHorizontalVelocity
-            ballY -= ballVerticalVelocity
-            if ballY > ballYCutoff:
-                ballY = ballYCutoff - 1
-                ballVerticalVelocity = ballVerticalVelocity * -0.5
-                ballHorizontalVelocity = ballHorizontalVelocity * 0.8
-    else:
-        shooting = False
+    #Movement
+    if shooting:
+        if y > floor:
+            y = floor - 1
+            ballVVelocity = ballVVelocity * -0.7
+            ballHVelocity = ballHVelocity * 0.7
+            bounces += 1
+
+        if bounces < 6:
+            ballVVelocity -= gravity
+            x += ballHVelocity
+            y -= ballVVelocity
+
+        else:
+            math.floor(ballVVelocity)
+
+        # Drawing
+        current_planet = pygame.transform.scale(current_planet, (30, 30))
+        current_planetRect = current_planet.get_rect(midbottom = (x, y))
+        court.blit(current_planet, current_planetRect)
 
     # Blitting to screen
-    screen.blit(circleCourt, (0, 0))
+    screen.blit(infoBar, (0, windowHeight * 2 / 3))
+    screen.blit(court, (0, 0))
 
     # Updates and tickrate
     pygame.display.update()

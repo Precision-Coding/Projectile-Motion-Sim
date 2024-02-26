@@ -8,7 +8,7 @@ import random
 
 # Functions
 
-def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVelocity):
+def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVelocity,resolution):
     # Constant
     infoBarWidth = int(windowWidth)
     infoBarHeight = int(windowHeight / 3)
@@ -21,7 +21,7 @@ def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVe
     for multiplier in range(1, int(windowWidth / 100)):
         lineXpos = infoBarWidth * multiplier / (windowWidth / 100)
         scaleLine = pygame.draw.line(infoBar, colours.white, (lineXpos, 0), (lineXpos, scaleLineLength), 2)
-        measurement = (multiplier - int(windowWidth / 200)) * 10
+        measurement = (multiplier - int(windowWidth / 200)) * resolution
         scaleTextBox = baseFont.render(f"{str(measurement)} m", False, colours.white)
         scaleTextBoxRect = scaleTextBox.get_rect(midtop = (lineXpos, scaleLineLength + 10))
         infoBar.blit(scaleTextBox, scaleTextBoxRect)
@@ -91,11 +91,11 @@ def courtCreate(windowWidth, windowHeight, radius, radAngle):
 
     return court
 
-def trajectoryCreate(hVelocity, vVelocity, circleCenter, surface, windowHeight):
+def trajectoryCreate(hVelocity, vVelocity, circleCenter, surface, windowHeight, resolution):
     x,y =  circleCenter
     vVelocity = vVelocity
     hVelocity = hVelocity 
-    gravity = 9.81 / 10
+    gravity = 9.81 / resolution
     bounces = 0
     floor = windowHeight * 2 / 3
 
@@ -157,6 +157,7 @@ windowWidth, windowHeight = 1200, 600
 circleCenter = (windowWidth / 2, windowHeight * 2 / 3)
 radius = 150
 shooting = False
+resolution = 10
 
 # Screen Setup
 pygame.init()
@@ -184,19 +185,18 @@ while True:
     # Screen stuff
     hVelocity = inputVelocity(circleCenter) * math.cos(mouseAngle(circleCenter))
     vVelocity = inputVelocity(circleCenter) * math.sin(mouseAngle(circleCenter))
-    infoBar = infoBarCreate(windowWidth, windowHeight, mouseAngle(circleCenter), inputVelocity(circleCenter), hVelocity, vVelocity)
+    infoBar = infoBarCreate(windowWidth, windowHeight, mouseAngle(circleCenter), inputVelocity(circleCenter), hVelocity, vVelocity, resolution)
     court = courtCreate(windowWidth, windowHeight, radius, mouseAngle(circleCenter))
-    trajectory = trajectoryCreate(hVelocity, vVelocity, circleCenter, court, windowHeight)
+    trajectory = trajectoryCreate(hVelocity, vVelocity, circleCenter, court, windowHeight, resolution)
 
     # Ball shooter
     if pygame.mouse.get_pressed() == (True, False, False):
         # Planet Selector and general initialisation
-        totalVelocity = inputVelocity(circleCenter)
         current_planet = random.choice([callum_planet, preston_planet])
         x,y =  circleCenter
         ballVVelocity = vVelocity * 1
         ballHVelocity = hVelocity * 1
-        gravity = 9.81 / 10
+        gravity = 9.81 / resolution
         bounces = 0
         floor = windowHeight / 3 * 2
         shooting = True
@@ -204,7 +204,7 @@ while True:
     #Movement
     if shooting:
         if y > floor:
-            y = floor - 1
+            y = floor
             ballVVelocity = ballVVelocity * -0.7
             ballHVelocity = ballHVelocity * 0.7
             bounces += 1

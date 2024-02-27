@@ -190,7 +190,7 @@ while True:
     trajectory = trajectoryCreate(hVelocity, vVelocity, circleCenter, court, windowHeight, resolution)
 
     # Ball shooter
-    if pygame.mouse.get_pressed() == (True, False, False):
+    if pygame.mouse.get_pressed() == (True, False, False) and shooting == False:
         # Planet Selector and general initialisation
         current_planet = random.choice([callum_planet, preston_planet])
         x,y =  circleCenter
@@ -215,6 +215,7 @@ while True:
             y -= ballVVelocity
 
         else:
+            shooting = False
             math.floor(ballVVelocity)
 
         # Drawing

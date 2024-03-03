@@ -25,5 +25,4 @@ class Colour:
             self.yellow,
             self.pink
         ]
-        
         return random.choice(colourList)

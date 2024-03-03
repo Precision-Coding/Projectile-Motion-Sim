@@ -7,7 +7,6 @@ import random
 
 
 # Functions
-
 def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVelocity,resolution):
     # Constant
     infoBarWidth = int(windowWidth)
@@ -25,7 +24,6 @@ def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVe
         scaleTextBox = baseFont.render(f"{str(measurement)} m", False, colours.white)
         scaleTextBoxRect = scaleTextBox.get_rect(midtop = (lineXpos, scaleLineLength + 10))
         infoBar.blit(scaleTextBox, scaleTextBoxRect)
-    
 
     # Text subject to change
     textOffSet = 100
@@ -65,6 +63,7 @@ def infoBarCreate(windowWidth, windowHeight,radAngle,inputVelocity,hVelocity,vVe
 
     return infoBar
 
+
 def courtCreate(windowWidth, windowHeight, radius, radAngle):
     lineXOffSet, lineYOffSet = angleToCircumference(mouseAngle(circleCenter), radius)
     # Court
@@ -91,10 +90,11 @@ def courtCreate(windowWidth, windowHeight, radius, radAngle):
 
     return court
 
+
 def trajectoryCreate(hVelocity, vVelocity, circleCenter, surface, windowHeight, resolution):
     x,y =  circleCenter
     vVelocity = vVelocity
-    hVelocity = hVelocity 
+    hVelocity = hVelocity
     gravity = 9.81 / resolution
     bounces = 0
     floor = windowHeight * 2 / 3
@@ -119,23 +119,21 @@ def mouseAngle(circleCenter):
 
     if respectiveY < 0:
         radAngle = 0
-    
     else:
         if respectiveX == 0:
             radAngle = math.pi / 2
-
         elif respectiveX < 0:
             radAngle = math.pi + math.atan(respectiveY / respectiveX)
-
         elif respectiveX > 0:
             radAngle = math.atan(respectiveY / respectiveX)
-
     return radAngle
+
 
 def angleToCircumference(radAngle, radius):
     y = radius * math.sin(radAngle)
     x = radius * math.cos(radAngle)
     return x, y
+
 
 def inputVelocity(circleCenter):
     centerX, centerY = circleCenter
@@ -144,7 +142,6 @@ def inputVelocity(circleCenter):
     respectiveY = centerY - cursorY
     inputVelocity = math.sqrt((respectiveX ** 2) + (respectiveY ** 2))
     return inputVelocity / 15
-
 
 
 # Framerate
